@@ -1,14 +1,22 @@
 import io
-from flask import Flask, render_template_string, request, send_file
+import os
 from PIL import Image
+from flask import Flask, render_template, request, send_file
 from reportlab.lib.pagesizes import A3, A4, landscape, portrait
 from reportlab.pdfgen import canvas
-import serverless_wsgi
 
-app = Flask(__name__)
+# 无论从哪里运行，都锁定到上一级真实根目录
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if os.path.basename(BASE_DIR) == 'functions':
+  BASE_DIR = os.path.dirname(BASE_DIR)
 
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static'),
+)
 
-# 1. 绘制裁切角线核心逻辑
+# 2. 绘制裁切角线与网格核心函数
 def draw_marks_and_grid(
     c,
     paper_w,
@@ -27,10 +35,10 @@ def draw_marks_and_grid(
   c.setLineWidth(0.4)
   mm = 72 / 25.4
 
-  line_dist_y = 1.0 * mm  # 竖向角线留白 0.1 cm
-  line_dist_x = 5.0 * mm  # 左右横向角线留白 0.5 cm
+  line_dist_y = 1.0 * mm  # 竖向角线距离成品边缘留白 0.1 cm
+  line_dist_x = 5.0 * mm  # 左右横向角线距离成品边缘留白 0.5 cm
   paper_margin = 3.0 * mm  # 纸张顶底留白 0.3 cm
-  mark_len = 6.0 * mm  # 角线长度 0.6 cm
+  mark_len = 6.0 * mm  # 角线绘制长度 0.6 cm
 
   if is_a3:
     x_positions = [
@@ -59,6 +67,7 @@ def draw_marks_and_grid(
   # 左右横向角线
   first_x = x_positions[0]
   last_x = x_positions[-1] + card_w
+
   for row in range(rows):
     y_bottom = start_y + row * (card_h + gutter_y)
     y_top = y_bottom + card_h
@@ -102,7 +111,7 @@ def draw_marks_and_grid(
     )
 
 
-# 2. 内存拼版生成器（直接接收 PIL Image 对象）
+# 3. 内存生成拼版 PDF 字节流
 def generate_pdf_bytes(paper_choice, use_bleed, front_img, back_img):
   pdf_buffer = io.BytesIO()
   mm = 72 / 25.4
@@ -141,7 +150,7 @@ def generate_pdf_bytes(paper_choice, use_bleed, front_img, back_img):
 
   c = canvas.Canvas(pdf_buffer, pagesize=(paper_w, paper_h))
 
-  # 页 1：正面
+  # 第 1 页：正面
   draw_marks_and_grid(
       c,
       paper_w,
@@ -170,7 +179,7 @@ def generate_pdf_bytes(paper_choice, use_bleed, front_img, back_img):
       )
   c.showPage()
 
-  # 页 2：背面
+  # 第 2 页：背面（短边翻转镜像对齐）
   draw_marks_and_grid(
       c,
       paper_w,
@@ -205,54 +214,10 @@ def generate_pdf_bytes(paper_choice, use_bleed, front_img, back_img):
   return pdf_buffer
 
 
-# 3. 路由设置
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>名片自动拼版工具</title>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; borderRadius: 8px; }
-        div { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="submit"] { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <h2>名片自动化拼版工具</h2>
-    <form action="/imposition" method="post" enctype="multipart/form-data">
-        <div>
-            <label>纸张规格：</label>
-            <select name="paper_choice">
-                <option value="1">A3 横向 (20张)</option>
-                <option value="2">A4 竖向 (10张)</option>
-            </select>
-        </div>
-        <div>
-            <label>出血设置：</label>
-            <input type="checkbox" name="use_bleed" value="true" checked> 添加 1.5mm 出血 (Bleed)
-        </div>
-        <div>
-            <label>名片正面图片：</label>
-            <input type="file" name="front" accept="image/*" required>
-        </div>
-        <div>
-            <label>名片背面图片：</label>
-            <input type="file" name="back" accept="image/*" required>
-        </div>
-        <div>
-            <input type="submit" value="生成拼版 PDF">
-        </div>
-    </form>
-</body>
-</html>
-"""
-
-
+# 4. Flask 路由处理
 @app.route('/')
 def index():
-  return render_template_string(HTML_TEMPLATE)
+  return render_template('index.html')
 
 
 @app.route('/imposition', methods=['POST'])
@@ -263,7 +228,6 @@ def process_imposition():
   front_file = request.files['front']
   back_file = request.files['back']
 
-  # 直接读取为 Image 对象
   front_img = Image.open(front_file.stream)
   back_img = Image.open(back_file.stream)
 
@@ -279,10 +243,13 @@ def process_imposition():
   )
 
 
-# Netlify Serverless 导出的 handler
+# 5. Netlify 云函数兼容入口（仅在云端生效）
 def handler(event, context):
+  import serverless_wsgi
+
   return serverless_wsgi.handle_request(app, event, context)
 
 
 if __name__ == '__main__':
+  print('正在启动本地服务... 请打开浏览器访问: http://127.0.0.1:5000')
   app.run(debug=True, port=5000)

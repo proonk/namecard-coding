@@ -2,17 +2,21 @@ import os
 from reportlab.lib.pagesizes import A3, A4, landscape, portrait
 from reportlab.pdfgen import canvas
 
-def draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x, start_y, gutter_x, gutter_y, is_a3):
+def draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x_left, start_x_right, start_y, gutter_x, gutter_y, is_a3):
     c.setLineWidth(0.4)
     mm = 72 / 25.4
     
-    # 手量数据：角线留白与长度
-    line_dist = 1.0 * mm    # 照片标注的 0.1 cm (1mm) 留白
-    mark_len = 6.0 * mm     # 裁切角线长度 (6mm)
+    line_dist = 1.0 * mm    # 0.1 cm (1mm) 角线留白
+    mark_len = 6.0 * mm     # 0.6 cm (6mm) 裁切角线长度
 
-    # 1. 绘制列间的裁切角线（包含 0.3 cm 中缝双线）
-    for col in range(cols):
-        x_left = start_x + col * (card_w + gutter_x)
+    if is_a3:
+        x_positions = [start_x_left, start_x_left + card_w + gutter_x, 
+                       start_x_right, start_x_right + card_w + gutter_x]
+    else:
+        x_positions = [start_x_left, start_x_left + card_w + gutter_x]
+
+    # 1. 绘制列间的裁切角线
+    for x_left in x_positions:
         x_right = x_left + card_w
         
         # 顶部竖向角线
@@ -30,49 +34,78 @@ def draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x
         y_bottom = start_y + row * (card_h + gutter_y)
         y_top = y_bottom + card_h
         
-        grid_w = cols * card_w + (cols - 1) * gutter_x
+        first_x = x_positions[0]
+        last_x = x_positions[-1] + card_w
         
-        # 如果是 A3，正中间一行的贯穿长线避开重叠角线
-        if not (is_a3 and row == 2):
-            # 左侧横向角线
-            c.line(start_x - line_dist, y_bottom, start_x - line_dist - mark_len, y_bottom)
-            c.line(start_x - line_dist, y_top, start_x - line_dist - mark_len, y_top)
+        # 最左侧横向角线
+        c.line(first_x - line_dist, y_bottom, first_x - line_dist - mark_len, y_bottom)
+        c.line(first_x - line_dist, y_top, first_x - line_dist - mark_len, y_top)
+        
+        # 最右侧横向角线
+        c.line(last_x + line_dist, y_bottom, last_x + line_dist + mark_len, y_bottom)
+        c.line(last_x + line_dist, y_top, last_x + line_dist + mark_len, y_top)
+        
+        # A3 中缝横向标记（中间两条竖线向两侧伸出的 0.1cm 留白角线）
+        if is_a3:
+            center_x = paper_w / 2.0
+            mid_offset = 8.0 * mm  # 照片标注的 0.8 cm
             
-            # 右侧横向角线
-            c.line(start_x + grid_w + line_dist, y_bottom, start_x + grid_w + line_dist + mark_len, y_bottom)
-            c.line(start_x + grid_w + line_dist, y_top, start_x + grid_w + line_dist + mark_len, y_top)
+            x_mid_left = center_x - mid_offset
+            x_mid_right = center_x + mid_offset
+            
+            # 左侧中线向左角线
+            c.line(x_mid_left + line_dist, y_bottom, x_mid_left + line_dist + mark_len, y_bottom)
+            c.line(x_mid_left + line_dist, y_top, x_mid_left + line_dist + mark_len, y_top)
+            
+            # 右侧中线向右角线
+            c.line(x_mid_right - line_dist, y_bottom, x_mid_right - line_dist - mark_len, y_bottom)
+            c.line(x_mid_right - line_dist, y_top, x_mid_right - line_dist - mark_len, y_top)
 
-    # 3. 只有 A3 横向才会绘制中央横贯长线 (Center Line)
+    # 3. A3 中央贯穿长线 (21.0cm 缝隙中线)
     if is_a3:
-        center_y = start_y + 2 * (card_h + gutter_y) + card_h / 2
-        c.line(0, center_y, paper_w, center_y)
+        center_a3_line = paper_w / 2.0  # 210mm (21cm)
+        c.line(center_a3_line, 0, center_a3_line, paper_h)
 
 def make_imposition_pdf(paper_choice, front_path, back_path, output_pdf):
     mm = 72 / 25.4
     
-    # 按照你手量的精准数据 (cm 转 mm)
     card_w = 90.0 * mm     # 9.0 cm
     card_h = 54.0 * mm     # 5.4 cm
     gutter_x = 3.0 * mm    # 0.3 cm 列中缝
     gutter_y = 3.0 * mm    # 0.3 cm 行缝隙
-    margin_x = 14.0 * mm   # 1.4 cm 左右留白
     
-    # 1 代表 A3 横向；2 代表 A4 竖向
+    a4_block_w = 2 * card_w + gutter_x
+    
     if paper_choice == '1':
         paper_w, paper_h = landscape(A3)
         cols, rows = 4, 5
         is_a3 = True
-        paper_name = "A3 横向 (20张)"
+        
+        a4_w = paper_w / 2.0  # 210mm
+        start_x_left = (a4_w - a4_block_w) / 2.0
+        start_x_right = a4_w + start_x_left
+        
+        x_positions = [
+            start_x_left, 
+            start_x_left + card_w + gutter_x,
+            start_x_right, 
+            start_x_right + card_w + gutter_x
+        ]
+        
+        paper_name = "A3 横向 (包含 0.8cm/0.1cm 精准中缝角线标记)"
     else:
         paper_w, paper_h = portrait(A4)
         cols, rows = 2, 5
         is_a3 = False
-        paper_name = "A4 竖向 (10张)"
+        
+        start_x_left = (paper_w - a4_block_w) / 2.0
+        start_x_right = start_x_left
+        x_positions = [start_x_left, start_x_left + card_w + gutter_x]
+        
+        paper_name = "A4 竖向 (10张 - 纯短角线)"
 
-    # 计算整体版面位置 (使用你指定的 1.4 cm Margin 进行水平精准对齐)
-    start_x = margin_x
     grid_h = rows * card_h + (rows - 1) * gutter_y
-    start_y = (paper_h - grid_h) / 2  # 垂直方向自动居中
+    start_y = (paper_h - grid_h) / 2.0  # 垂直方向居中
 
     output_dir = os.path.dirname(output_pdf)
     if output_dir and not os.path.exists(output_dir):
@@ -81,20 +114,20 @@ def make_imposition_pdf(paper_choice, front_path, back_path, output_pdf):
     c = canvas.Canvas(output_pdf, pagesize=(paper_w, paper_h))
     
     # ----- 第 1 页：正面 -----
-    draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x, start_y, gutter_x, gutter_y, is_a3)
+    draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x_left, start_x_right, start_y, gutter_x, gutter_y, is_a3)
     for row in range(rows):
         for col in range(cols):
-            x = start_x + col * (card_w + gutter_x)
+            x = x_positions[col]
             y = start_y + (rows - 1 - row) * (card_h + gutter_y)
             c.drawImage(front_path, x, y, width=card_w, height=card_h)
     c.showPage()
     
-    # ----- 第 2 页：背面（自动左右镜像，保证短边翻转无缝重合） -----
-    draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x, start_y, gutter_x, gutter_y, is_a3)
+    # ----- 第 2 页：背面（短边翻转镜像对齐） -----
+    draw_marks_and_grid(c, paper_w, paper_h, card_w, card_h, cols, rows, start_x_left, start_x_right, start_y, gutter_x, gutter_y, is_a3)
     for row in range(rows):
         for col in range(cols):
             mirror_col = (cols - 1) - col
-            x = start_x + mirror_col * (card_w + gutter_x)
+            x = x_positions[mirror_col]
             y = start_y + (rows - 1 - row) * (card_h + gutter_y)
             c.drawImage(back_path, x, y, width=card_w, height=card_h)
     c.showPage()
@@ -104,8 +137,8 @@ def make_imposition_pdf(paper_choice, front_path, back_path, output_pdf):
 
 if __name__ == "__main__":
     print("====== 自动化名片拼版工具 ======")
-    print("1. A3 横向 (20张)")
-    print("2. A4 竖向 (10张 - 包含 0.3cm 中缝/缝隙与 1.4cm Margin)")
+    print("1. A3 横向 (20张 - 精准中缝角线排版)")
+    print("2. A4 竖向 (10张 - 纯短角线)")
     choice = input("请选择纸张规格 (输入 1 或 2，按回车): ").strip()
     
     base_dir = os.path.dirname(os.path.abspath(__file__))

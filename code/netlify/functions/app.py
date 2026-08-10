@@ -1,7 +1,7 @@
 import os
 import sys
 
-# 向上推两级目录，找到根目录的 app.py
+# 获取项目根目录绝对路径并加入 Python 模块搜索路径中
 FUNCTIONS_DIR = os.path.dirname(os.path.abspath(__file__))
 NETLIFY_DIR = os.path.dirname(FUNCTIONS_DIR)
 BASE_DIR = os.path.dirname(NETLIFY_DIR)

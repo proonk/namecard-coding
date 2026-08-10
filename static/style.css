@@ -1,443 +1,410 @@
-/* ---------------------------------------------------
-   Tokens
---------------------------------------------------- */
 :root {
-  --paper: #F3F2ED;
-  --paper-alt: #E9E7DD;
-  --ink: #16160F;
-  --ink-soft: #5B5C51;
-  --line: #C9C7BA;
-  --blue: #1E3FE0;
-  --blue-dim: #E4E9FC;
-  --red: #C4351E;
-
-  --font-display: "Space Grotesk", sans-serif;
-  --font-body: "IBM Plex Sans", sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
-
-  --radius: 3px;
+    --bg-dark: #0b1120;
+    --bg-dark-2: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.55);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-soft: rgba(255, 255, 255, 0.06);
+    --accent-blue: #38bdf8;
+    --accent-purple: #818cf8;
+    --accent-green: #34d399;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --radius: 18px;
+    --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-* { box-sizing: border-box; }
-
-[hidden] { display: none !important; }
-
-html, body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  min-height: 100vh;
-  padding: 48px 20px 80px;
-  background-image:
-    linear-gradient(var(--paper) 0%, var(--paper) 100%),
-    repeating-linear-gradient(0deg, rgba(0,0,0,0.025) 0px, rgba(0,0,0,0.025) 1px, transparent 1px, transparent 48px);
+    font-family: var(--font-body);
+    background-color: var(--bg-dark);
+    background-image:
+        linear-gradient(var(--bg-dark), var(--bg-dark-2)),
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 100% 100%, 42px 42px, 42px 42px;
+    background-position: center, center, center;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
 }
 
-.sheet {
-  max-width: 720px;
-  margin: 0 auto;
+/* 背景光晕 */
+.bg-glow {
+    position: absolute;
+    width: 560px;
+    height: 560px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, rgba(129, 140, 248, 0.10) 45%, rgba(0, 0, 0, 0) 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
-/* ---------------------------------------------------
-   Header
---------------------------------------------------- */
-.ticket-head { margin-bottom: 36px; }
-
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--blue);
-  margin: 0 0 14px;
-  text-transform: uppercase;
+/* 主面板 */
+.app-card {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(28px, 5vw, 38px);
-  letter-spacing: -0.01em;
-  margin: 0 0 10px;
+/* Header */
+.app-header {
+    text-align: center;
+    margin-bottom: 32px;
 }
 
-.sub {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--ink-soft);
-  margin: 0;
-  max-width: 46ch;
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    border-radius: 20px;
+    margin-bottom: 16px;
 }
 
-/* ---------------------------------------------------
-   Dropzones
---------------------------------------------------- */
-.dropzone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+.badge .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 6px var(--accent-green);
 }
 
-.dropzone {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius);
-  background: rgba(255,255,255,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-  outline: none;
+.app-header h1 {
+    font-family: var(--font-display);
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.dropzone:hover { background: rgba(255,255,255,0.7); border-color: #B7B5A6; }
-.dropzone:focus-visible { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-dim); }
-.dropzone.is-dragover { background: var(--blue-dim); border-color: var(--blue); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,63,224,0.14); }
-.dropzone.has-file { border-style: solid; border-color: var(--line); background: #fff; cursor: default; }
-.dropzone.has-file:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
-
-/* crop marks — corner brackets that sit outside the frame, matching
-   the actual crop marks drawn on the generated PDF */
-.crop-mark { position: absolute; width: 16px; height: 16px; pointer-events: none; }
-.crop-mark::before, .crop-mark::after { content: ""; position: absolute; background: var(--line); transition: background 0.2s ease; }
-.crop-mark::before { width: 100%; height: 1px; }
-.crop-mark::after { width: 1px; height: 100%; }
-
-.crop-mark.tl { top: -7px; left: -7px; }
-.crop-mark.tr { top: -7px; right: -7px; }
-.crop-mark.bl { bottom: -7px; left: -7px; }
-.crop-mark.br { bottom: -7px; right: -7px; }
-
-.crop-mark.tl::before, .crop-mark.tl::after,
-.crop-mark.tr::before, .crop-mark.tr::after,
-.crop-mark.bl::before, .crop-mark.bl::after,
-.crop-mark.br::before, .crop-mark.br::after { top: auto; left: auto; }
-
-.crop-mark.tl::before { top: 7px; left: 0; }
-.crop-mark.tl::after  { top: 0; left: 7px; }
-.crop-mark.tr::before { top: 7px; right: 0; }
-.crop-mark.tr::after  { top: 0; right: 7px; }
-.crop-mark.bl::before { bottom: 7px; left: 0; }
-.crop-mark.bl::after  { bottom: 0; left: 7px; }
-.crop-mark.br::before { bottom: 7px; right: 0; }
-.crop-mark.br::after  { bottom: 0; right: 7px; }
-
-.dropzone.has-file .crop-mark::before,
-.dropzone.has-file .crop-mark::after,
-.dropzone.is-dragover .crop-mark::before,
-.dropzone.is-dragover .crop-mark::after { background: var(--blue); }
-
-.dz-empty, .dz-preview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-  padding: 16px;
-  width: 100%;
+.app-header p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 38ch;
+    margin: 0 auto;
 }
 
-.dz-icon { color: var(--ink-soft); width: 26px; }
-.dz-icon svg { width: 100%; height: 100%; }
-
-.dz-label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--ink);
+/* 配置网格 */
+.config-grid, .upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-.dz-hint { font-size: 12.5px; color: var(--ink-soft); }
-
-.dz-preview { height: 100%; padding: 10px; justify-content: space-between; }
-
-.dz-preview img {
-  max-width: 100%;
-  max-height: calc(100% - 30px);
-  object-fit: contain;
-  border-radius: 2px;
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 9px;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
 }
 
-.dz-file-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  justify-content: center;
+.form-group label svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.9; }
+
+/* 下拉选择框 */
+.select-wrapper {
+    position: relative;
 }
 
-.dz-filename {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--ink-soft);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 55%;
+select {
+    width: 100%;
+    height: 46px;
+    padding: 0 38px 0 14px;
+    appearance: none;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.dz-clear {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--blue);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 4px;
-}
-.dz-clear:hover { text-decoration: underline; }
+select:hover { border-color: rgba(255,255,255,0.2); }
 
-/* ---------------------------------------------------
-   Ticket (options)
---------------------------------------------------- */
-.ticket {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255,255,255,0.55);
-  padding: 20px 22px;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 8px 20px -14px rgba(0,0,0,0.25);
+select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
 }
 
-.ticket-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--line);
-}
-.ticket-row:first-child { padding-top: 2px; }
-
-.ticket-label {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: var(--ink);
-  min-width: 78px;
-  flex-shrink: 0;
-}
-.ticket-label small { color: var(--ink-soft); letter-spacing: 0.06em; }
-
-.chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.chip input { position: absolute; opacity: 0; pointer-events: none; }
-
-.chip span {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 7px 13px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  color: var(--ink-soft);
-  cursor: pointer;
-  transition: all 0.15s ease;
+.select-arrow {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+    width: 11px;
+    height: 11px;
 }
 
-.chip input:checked + span {
-  border-color: var(--blue);
-  background: var(--blue);
-  color: #fff;
+/* Toggle 切换开关 */
+/* NOTE: selector specificity fix — ".form-group label" (0,1,1) used to beat
+   ".toggle-switch" (0,1,0) and silently forced display:block back on,
+   which is what broke the layout. Scoping it as "label.toggle-switch"
+   (0,2,0) now wins on its own terms without needing !important. */
+label.toggle-switch {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--border);
+    padding: 0 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 46px;
+    width: 100%;
+    gap: 11px;
+    user-select: none;
+    margin-bottom: 0;
+    transition: border-color 0.2s ease;
 }
 
-.chip input:focus-visible + span { box-shadow: 0 0 0 3px var(--blue-dim); }
+label.toggle-switch:hover { border-color: rgba(255,255,255,0.2); }
 
-.switch { position: relative; display: inline-flex; cursor: pointer; }
-.switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-
-.switch-track {
-  width: 38px;
-  height: 22px;
-  background: var(--line);
-  border-radius: 12px;
-  position: relative;
-  transition: background 0.15s ease;
+.toggle-switch input {
+    position: absolute;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 
-.switch-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+.toggle-slider {
+    width: 36px;
+    height: 20px;
+    background-color: #334155;
+    border-radius: 20px;
+    padding: 3px;
+    transition: background-color 0.25s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
-.switch input:checked ~ .switch-track { background: var(--blue); }
-.switch input:checked ~ .switch-track .switch-thumb { transform: translateX(16px); }
-.switch input:focus-visible ~ .switch-track { box-shadow: 0 0 0 3px var(--blue-dim); }
-
-.switch-state {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--ink-soft);
+.toggle-slider::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    transition: transform 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-.spec-line {
-  display: flex;
-  gap: 28px;
-  margin: 14px 0 0;
-  padding-top: 4px;
-  flex-wrap: wrap;
+input:checked + .toggle-slider {
+    background-color: var(--accent-blue);
 }
 
-.spec-line > div { display: flex; flex-direction: column; gap: 3px; }
-
-.spec-line dt {
-  font-size: 11px;
-  color: var(--ink-soft);
+input:checked + .toggle-slider::before {
+    transform: translateX(16px);
 }
 
-.spec-line dd {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 500;
+input:focus-visible + .toggle-slider {
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
 }
 
-/* ---------------------------------------------------
-   Generate button
---------------------------------------------------- */
-.generate-btn {
-  position: relative;
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 15px;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  overflow: hidden;
-  transition: background 0.15s ease, opacity 0.15s ease;
+.toggle-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.generate-btn:hover:not(:disabled) { background: #000; box-shadow: 0 8px 18px -8px rgba(0,0,0,0.4); }
-.generate-btn:active:not(:disabled) { transform: translateY(1px); }
-.generate-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
-
-.generate-btn .btn-label { position: relative; z-index: 1; }
-
-.generate-btn.is-loading .btn-label::after {
-  content: "";
+/* 上传卡片区域 */
+.drop-zone {
+    border: 1.5px dashed var(--border);
+    background: rgba(15, 23, 42, 0.35);
+    border-radius: 12px;
+    padding: 22px 12px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
 }
 
-.generate-btn.is-loading {
-  background: var(--ink);
+.drop-zone:hover {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(56, 189, 248, 0.06);
 }
 
-.generate-btn.is-loading::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(30,63,224,0.55), transparent);
-  width: 40%;
-  animation: feed 1.1s linear infinite;
+.drop-zone.dragover {
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+    transform: translateY(-1px);
 }
 
-@keyframes feed {
-  from { transform: translateX(-120%); }
-  to { transform: translateX(340%); }
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.icon-circle {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    color: var(--accent-blue);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.icon-circle svg { width: 16px; height: 16px; }
+
+.drop-zone:hover .icon-circle {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #0b1120;
+}
+
+.drop-title {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.file-status {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+.file-status.is-set {
+    color: var(--accent-green);
+    font-weight: 600;
+}
+
+.drop-zone.has-file {
+    border-style: solid;
+    border-color: var(--accent-green);
+    background: rgba(52, 211, 153, 0.06);
+}
+
+.drop-zone.has-file .icon-circle {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: #0b1120;
+}
+
+/* 提交按钮 */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: #0b1120;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-submit .btn-text, .btn-submit .btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-submit svg { width: 15px; height: 15px; }
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(56, 189, 248, 0.45);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.spin {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .generate-btn.is-loading::before { animation: none; }
+    .spin { animation: none; }
 }
 
-.error-msg {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--red);
-  margin: 12px 2px 0;
-}
-
-/* ---------------------------------------------------
-   Result stub
---------------------------------------------------- */
-.result-stub {
-  margin-top: 22px;
-  display: flex;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: #fff;
-  overflow: hidden;
-}
-
-.stub-perf {
-  width: 18px;
-  flex-shrink: 0;
-  background-image: radial-gradient(circle, var(--paper) 3px, transparent 3.2px);
-  background-size: 100% 16px;
-  background-position: center;
-  border-right: 1px dashed var(--line);
-}
-
-.stub-body {
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.stub-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: var(--blue);
-  margin: 0;
-}
-
-.stub-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 16px;
-  margin: 2px 0 0;
-  flex: 1 0 100%;
-}
-
-.stub-download {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 14px;
-  color: #fff;
-  background: var(--blue);
-  padding: 10px 18px;
-  border-radius: 20px;
-  text-decoration: none;
-}
-.stub-download:hover { background: #1533b8; }
-
-.stub-reset {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
+.btn-submit .btn-text.d-none,
+.btn-submit .btn-loading.d-none,
+.d-none {
+    display: none;
 }
 
 /* ---------------------------------------------------
    Responsive
 --------------------------------------------------- */
 @media (max-width: 560px) {
-  .dropzone-grid { grid-template-columns: 1fr; }
-  .ticket-row { flex-wrap: wrap; }
-  .spec-line { gap: 18px; }
+    .app-card { padding: 28px 22px; }
+    .config-grid, .upload-grid { grid-template-columns: 1fr; gap: 12px; }
 }

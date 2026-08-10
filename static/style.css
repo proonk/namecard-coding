@@ -1,14 +1,14 @@
 :root {
     --bg-dark: #0b1120;
     --bg-dark-2: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.55);
-    --border: rgba(255, 255, 255, 0.1);
-    --border-soft: rgba(255, 255, 255, 0.06);
+    --card-bg: rgba(30, 41, 59, 0.65);
+    --border: rgba(255, 255, 255, 0.15);
+    --border-soft: rgba(255, 255, 255, 0.1);
     --accent-blue: #38bdf8;
     --accent-purple: #818cf8;
     --accent-green: #34d399;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
     --radius: 18px;
     --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -40,7 +40,6 @@ body {
     overflow-x: hidden;
 }
 
-/* 背景光晕 */
 .bg-glow {
     position: absolute;
     width: 560px;
@@ -53,7 +52,6 @@ body {
     z-index: 0;
 }
 
-/* 主面板 */
 .app-card {
     position: relative;
     z-index: 1;
@@ -64,11 +62,10 @@ body {
     border-radius: var(--radius);
     padding: 40px;
     width: 100%;
-    max-width: 540px;
-    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+    max-width: 560px;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-/* Header */
 .app-header {
     text-align: center;
     margin-bottom: 32px;
@@ -78,46 +75,43 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px;
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 6px 14px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
     color: var(--accent-blue);
     font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 1.5px;
     border-radius: 20px;
     margin-bottom: 16px;
 }
 
 .badge .dot {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--accent-green);
-    box-shadow: 0 0 6px var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green);
 }
 
 .app-header h1 {
     font-family: var(--font-display);
-    font-size: 25px;
+    font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.01em;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #ffffff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff;
 }
 
 .app-header p {
-    font-size: 13px;
+    font-size: 14.5px;
     line-height: 1.6;
     color: var(--text-secondary);
-    max-width: 38ch;
+    max-width: 42ch;
     margin: 0 auto;
 }
 
-/* 配置网格 */
 .config-grid, .upload-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -129,41 +123,41 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 9px;
-    color: var(--text-secondary);
+    color: #f1f5f9;
     letter-spacing: 0.01em;
 }
 
-.form-group label svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.9; }
+.form-group label svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--accent-blue); }
 
-/* 下拉选择框 */
 .select-wrapper {
     position: relative;
 }
 
 select {
     width: 100%;
-    height: 46px;
+    height: 48px;
     padding: 0 38px 0 14px;
     appearance: none;
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(15, 23, 42, 0.8);
     border: 1px solid var(--border);
     border-radius: 10px;
-    color: var(--text-primary);
+    color: #ffffff;
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     outline: none;
     cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-select:hover { border-color: rgba(255,255,255,0.2); }
+select:hover { border-color: rgba(255,255,255,0.3); }
 
 select:focus {
     border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
 
 .select-arrow {
@@ -171,34 +165,29 @@ select:focus {
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-secondary);
+    color: var(--accent-blue);
     pointer-events: none;
-    width: 11px;
-    height: 11px;
+    width: 13px;
+    height: 13px;
 }
 
-/* Toggle 切换开关 */
-/* NOTE: selector specificity fix — ".form-group label" (0,1,1) used to beat
-   ".toggle-switch" (0,1,0) and silently forced display:block back on,
-   which is what broke the layout. Scoping it as "label.toggle-switch"
-   (0,2,0) now wins on its own terms without needing !important. */
 label.toggle-switch {
     display: flex;
     align-items: center;
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(15, 23, 42, 0.8);
     border: 1px solid var(--border);
     padding: 0 14px;
     border-radius: 10px;
     cursor: pointer;
-    height: 46px;
+    height: 48px;
     width: 100%;
-    gap: 11px;
+    gap: 12px;
     user-select: none;
     margin-bottom: 0;
     transition: border-color 0.2s ease;
 }
 
-label.toggle-switch:hover { border-color: rgba(255,255,255,0.2); }
+label.toggle-switch:hover { border-color: rgba(255,255,255,0.3); }
 
 .toggle-switch input {
     position: absolute;
@@ -208,8 +197,8 @@ label.toggle-switch:hover { border-color: rgba(255,255,255,0.2); }
 }
 
 .toggle-slider {
-    width: 36px;
-    height: 20px;
+    width: 38px;
+    height: 22px;
     background-color: #334155;
     border-radius: 20px;
     padding: 3px;
@@ -221,8 +210,8 @@ label.toggle-switch:hover { border-color: rgba(255,255,255,0.2); }
 
 .toggle-slider::before {
     content: "";
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background-color: #ffffff;
     transition: transform 0.25s ease;
@@ -237,39 +226,32 @@ input:checked + .toggle-slider::before {
     transform: translateX(16px);
 }
 
-input:focus-visible + .toggle-slider {
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
-}
-
 .toggle-text {
-    font-size: 13px;
-    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* 上传卡片区域 */
+/* 上传框与缩略图预览 */
 .drop-zone {
-    border: 1.5px dashed var(--border);
-    background: rgba(15, 23, 42, 0.35);
+    border: 1.5px dashed rgba(255, 255, 255, 0.2);
+    background: rgba(15, 23, 42, 0.5);
     border-radius: 12px;
-    padding: 22px 12px;
+    padding: 16px 12px;
     text-align: center;
     position: relative;
     cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .drop-zone:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    background: rgba(56, 189, 248, 0.06);
-}
-
-.drop-zone.dragover {
     border-color: var(--accent-blue);
-    background: rgba(56, 189, 248, 0.1);
-    transform: translateY(-1px);
+    background: rgba(56, 189, 248, 0.08);
 }
 
 .file-input {
@@ -280,12 +262,13 @@ input:focus-visible + .toggle-slider {
     height: 100%;
     opacity: 0;
     cursor: pointer;
+    z-index: 2;
 }
 
 .icon-circle {
-    width: 38px;
-    height: 38px;
-    background: rgba(255, 255, 255, 0.05);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--border-soft);
     border-radius: 50%;
     display: flex;
@@ -293,50 +276,77 @@ input:focus-visible + .toggle-slider {
     justify-content: center;
     margin: 0 auto 10px;
     color: var(--accent-blue);
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.icon-circle svg { width: 16px; height: 16px; }
-
-.drop-zone:hover .icon-circle {
-    background: var(--accent-blue);
-    border-color: var(--accent-blue);
-    color: #0b1120;
-}
+.icon-circle svg { width: 18px; height: 18px; }
 
 .drop-title {
     display: block;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
     margin-bottom: 4px;
 }
 
 .file-status {
     display: block;
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    color: var(--text-secondary);
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+/* 已选择图片的预览样式 */
+.preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    z-index: 3;
+}
+
+.img-preview {
+    max-width: 100%;
+    max-height: 85px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin-bottom: 8px;
+}
+
+.preview-filename {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: 600;
+    max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: 0 4px;
+    margin-bottom: 6px;
 }
 
-.file-status.is-set {
-    color: var(--accent-green);
-    font-weight: 600;
+.btn-change-img {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-change-img:hover {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: var(--accent-blue);
 }
 
 .drop-zone.has-file {
     border-style: solid;
     border-color: var(--accent-green);
-    background: rgba(52, 211, 153, 0.06);
-}
-
-.drop-zone.has-file .icon-circle {
-    background: var(--accent-green);
-    border-color: var(--accent-green);
-    color: #0b1120;
+    background: rgba(52, 211, 153, 0.08);
 }
 
 /* 提交按钮 */
@@ -348,10 +358,10 @@ input:focus-visible + .toggle-slider {
     border: none;
     border-radius: 12px;
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
     margin-top: 8px;
     display: flex;
     align-items: center;
@@ -366,45 +376,17 @@ input:focus-visible + .toggle-slider {
     gap: 8px;
 }
 
-.btn-submit svg { width: 15px; height: 15px; }
+.btn-submit svg { width: 17px; height: 17px; }
 
 .btn-submit:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 24px -6px rgba(56, 189, 248, 0.45);
 }
 
-.btn-submit:active {
-    transform: translateY(0);
-}
+.btn-submit:active { transform: translateY(0); }
 
-.btn-submit:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-}
+.spin { animation: spin 0.8s linear infinite; }
 
-.spin {
-    animation: spin 0.8s linear infinite;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .spin { animation: none; }
-}
-
-.btn-submit .btn-text.d-none,
-.btn-submit .btn-loading.d-none,
-.d-none {
-    display: none;
-}
-
-/* ---------------------------------------------------
-   Responsive
---------------------------------------------------- */
-@media (max-width: 560px) {
-    .app-card { padding: 28px 22px; }
-    .config-grid, .upload-grid { grid-template-columns: 1fr; gap: 12px; }
-}
+.d-none { display: none !important; }

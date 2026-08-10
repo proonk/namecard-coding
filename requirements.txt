@@ -1,0 +1,4 @@
+Flask
+reportlab
+serverless-wsgi
+Pillow

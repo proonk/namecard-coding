@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名片自动化拼版 · Imposition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<main class="sheet">
+
+  <header class="ticket-head">
+    <p class="eyebrow">PRINT PRODUCTION&nbsp;/&nbsp;IMPOSITION</p>
+    <h1>名片自动化拼版</h1>
+    <p class="sub">上传正反面图片，自动排入出血线与裁切标记，一键生成可直接送印的 PDF。</p>
+  </header>
+
+  <form id="impose-form" novalidate>
+
+    <div class="dropzone-grid">
+
+      <div class="dropzone" data-side="front" id="dropzone-front" tabindex="0" role="button"
+           aria-label="上传正面图片">
+        <span class="crop-mark tl"></span>
+        <span class="crop-mark tr"></span>
+        <span class="crop-mark bl"></span>
+        <span class="crop-mark br"></span>
+        <input type="file" id="file-front" name="front" accept="image/*" hidden required>
+
+        <div class="dz-empty">
+          <span class="dz-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="dz-label">正面&nbsp;FRONT</span>
+          <span class="dz-hint">拖拽图片到此处，或点击上传</span>
+        </div>
+
+        <div class="dz-preview" hidden>
+          <img id="preview-front" alt="正面预览">
+          <div class="dz-file-row">
+            <span class="dz-filename" id="filename-front"></span>
+            <button type="button" class="dz-clear" data-target="front">替换</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropzone" data-side="back" id="dropzone-back" tabindex="0" role="button"
+           aria-label="上传背面图片">
+        <span class="crop-mark tl"></span>
+        <span class="crop-mark tr"></span>
+        <span class="crop-mark bl"></span>
+        <span class="crop-mark br"></span>
+        <input type="file" id="file-back" name="back" accept="image/*" hidden required>
+
+        <div class="dz-empty">
+          <span class="dz-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="dz-label">背面&nbsp;BACK</span>
+          <span class="dz-hint">拖拽图片到此处，或点击上传</span>
+        </div>
+
+        <div class="dz-preview" hidden>
+          <img id="preview-back" alt="背面预览">
+          <div class="dz-file-row">
+            <span class="dz-filename" id="filename-back"></span>
+            <button type="button" class="dz-clear" data-target="back">替换</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ticket">
+
+      <div class="ticket-row">
+        <span class="ticket-label">纸张规格<br><small>PAPER</small></span>
+        <div class="chip-group" role="radiogroup" aria-label="纸张规格">
+          <label class="chip">
+            <input type="radio" name="paper_choice" value="1" checked>
+            <span>A3 横向 · 20 张</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="paper_choice" value="2">
+            <span>A4 竖向 · 10 张</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ticket-row">
+        <span class="ticket-label">出血<br><small>BLEED</small></span>
+        <label class="switch">
+          <input type="checkbox" name="use_bleed" value="true" checked id="bleed-toggle">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+        <span class="switch-state" id="bleed-state">1.5&nbsp;mm 出血</span>
+      </div>
+
+      <dl class="spec-line">
+        <div><dt>成品尺寸</dt><dd>90 × 54 mm</dd></div>
+        <div><dt>拼版数量</dt><dd id="spec-count">20 张 / 页</dd></div>
+        <div><dt>间距</dt><dd>3 mm</dd></div>
+      </dl>
+
+    </div>
+
+    <button type="submit" class="generate-btn" id="generate-btn" disabled>
+      <span class="btn-label">生成拼版 PDF</span>
+    </button>
+
+    <p class="error-msg" id="error-msg" role="alert" hidden></p>
+
+  </form>
+
+  <div class="result-stub" id="result-stub" hidden>
+    <div class="stub-perf" aria-hidden="true"></div>
+    <div class="stub-body">
+      <p class="stub-eyebrow">READY</p>
+      <p class="stub-title">拼版 PDF 已生成</p>
+      <a class="stub-download" id="stub-download" href="#" download="Business_Cards_Imposition.pdf">下载 PDF</a>
+      <button type="button" class="stub-reset" id="stub-reset">再做一次</button>
+    </div>
+  </div>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

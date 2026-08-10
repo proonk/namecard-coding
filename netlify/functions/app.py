@@ -7,11 +7,10 @@ from reportlab.pdfgen import canvas
 
 # 自动锁定真实的项目根目录路径，确保 templates 和 static 能被正常读取
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-if os.path.basename(CURRENT_DIR) == 'functions':
-  BASE_DIR = os.path.dirname(CURRENT_DIR)
+if 'netlify' in CURRENT_DIR or 'functions' in CURRENT_DIR:
+  BASE_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))
 else:
   BASE_DIR = CURRENT_DIR
-
 app = Flask(
     __name__,
     template_folder=os.path.join(BASE_DIR, 'templates'),

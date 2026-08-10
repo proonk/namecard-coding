@@ -20,6 +20,8 @@
 
 * { box-sizing: border-box; }
 
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   background: var(--paper);
@@ -83,21 +85,22 @@ h1 {
 .dropzone {
   position: relative;
   aspect-ratio: 16 / 10;
-  border: 1px solid var(--line);
+  border: 1.5px dashed var(--line);
   border-radius: var(--radius);
   background: rgba(255,255,255,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   outline: none;
 }
 
-.dropzone:hover { background: rgba(255,255,255,0.65); }
+.dropzone:hover { background: rgba(255,255,255,0.7); border-color: #B7B5A6; }
 .dropzone:focus-visible { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-dim); }
-.dropzone.is-dragover { background: var(--blue-dim); border-color: var(--blue); }
-.dropzone.has-file { border-style: solid; background: #fff; }
+.dropzone.is-dragover { background: var(--blue-dim); border-color: var(--blue); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,63,224,0.14); }
+.dropzone.has-file { border-style: solid; border-color: var(--line); background: #fff; cursor: default; }
+.dropzone.has-file:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
 
 /* crop marks — corner brackets that sit outside the frame, matching
    the actual crop marks drawn on the generated PDF */
@@ -197,9 +200,10 @@ h1 {
 .ticket {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.55);
   padding: 20px 22px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 8px 20px -14px rgba(0,0,0,0.25);
 }
 
 .ticket-row {
@@ -321,8 +325,9 @@ h1 {
   transition: background 0.15s ease, opacity 0.15s ease;
 }
 
-.generate-btn:hover:not(:disabled) { background: #000; }
-.generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.generate-btn:hover:not(:disabled) { background: #000; box-shadow: 0 8px 18px -8px rgba(0,0,0,0.4); }
+.generate-btn:active:not(:disabled) { transform: translateY(1px); }
+.generate-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
 
 .generate-btn .btn-label { position: relative; z-index: 1; }
 
